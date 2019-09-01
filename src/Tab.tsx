@@ -7,11 +7,7 @@ export const Tab = styled.div`
   justify-content: center;
   align-items: center;
   border-right: 1px solid black;
-  &:first-child {
-    border-radius: 5px 0 0 5px;
-  }
   &:last-child {
-    border-radius: 0 5px 5px 0;
     border-right: none;
   }
 `
