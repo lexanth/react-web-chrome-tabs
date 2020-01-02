@@ -36,8 +36,9 @@ const Pager: React.FC<{ tabs: Array<TabShape> }> = ({ tabs }) => {
 
   const contentContainer = useRef<HTMLDivElement>(null)
   const setActiveTabIndex = (index: number) => {
-    if (contentContainer.current) {
-      contentContainer.current.scrollTo({
+    const node = contentContainer.current
+    if (node) {
+      node.scrollTo({
         left: index * viewportWidth,
         behavior: 'smooth',
       })
