@@ -31,11 +31,9 @@ const ContentPage = styled.div`
 
 const Pager: React.FC<{ tabs: Array<TabShape> }> = ({ tabs }) => {
   const [viewportWidth] = useViewportSizes()
-  const [scrollPos, setScrollPos] = useSpring(() => ({ x: 0 }))
-  const activeTabIndex = scrollPos.x.interpolate({
-    range: [0, 2 * viewportWidth],
-    output: [0, 2],
-  })
+  const [state, setState] = useSpring(() => ({ activeIndex: 0 }))
+  const activeTabIndex = state.activeIndex
+
   const contentContainer = useRef<HTMLDivElement>(null)
   const setActiveTabIndex = (index: number) => {
     if (contentContainer.current) {
@@ -46,7 +44,7 @@ const Pager: React.FC<{ tabs: Array<TabShape> }> = ({ tabs }) => {
     }
   }
   const bind = useScroll(({ xy }) => {
-    setScrollPos({ x: xy[0], immediate: true })
+    setState({ activeIndex: xy[0] / viewportWidth, immediate: true })
   })
 
   return (
