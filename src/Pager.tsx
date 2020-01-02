@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import styled from 'styled-components'
-import RadioIcon from '@material-ui/icons/Radio'
-import ComputerIcon from '@material-ui/icons/Computer'
-import TvIcon from '@material-ui/icons/Tv'
 import TabBar from './TabBar'
-import Tab from './Tab'
+import { TabShape } from './types'
+import { useSpring } from 'react-spring'
+import useViewportSizes from 'use-viewport-sizes'
+import { useScroll } from 'react-use-gesture'
 
 const PagerContainer = styled.div`
   display: flex;
@@ -19,38 +19,47 @@ const Content = styled.div`
   margin-top: 10px;
   width: 100%;
   overflow-x: scroll;
+  scroll-snap-type: x mandatory;
 `
 
 const ContentPage = styled.div`
   border: 10px solid cornflowerblue;
   box-sizing: border-box;
   flex: 0 0 100%;
+  scroll-snap-align: start;
 `
 
-const Pager: React.FC<{}> = () => {
+const Pager: React.FC<{ tabs: Array<TabShape> }> = ({ tabs }) => {
+  const [viewportWidth] = useViewportSizes()
+  const [scrollPos, setScrollPos] = useSpring(() => ({ x: 0 }))
+  const activeTabIndex = scrollPos.x.interpolate({
+    range: [0, 2 * viewportWidth],
+    output: [0, 2],
+  })
+  const contentContainer = useRef<HTMLDivElement>(null)
+  const setActiveTabIndex = (index: number) => {
+    if (contentContainer.current) {
+      contentContainer.current.scrollTo({
+        left: index * viewportWidth,
+        behavior: 'smooth',
+      })
+    }
+  }
+  const bind = useScroll(({ xy }) => {
+    setScrollPos({ x: xy[0], immediate: true })
+  })
+
   return (
     <PagerContainer>
-      <TabBar>
-        <Tab>
-          <RadioIcon />
-        </Tab>
-        <Tab>
-          <ComputerIcon />
-        </Tab>
-        <Tab>
-          <TvIcon />
-        </Tab>
-      </TabBar>
-      <Content>
-        <ContentPage>
-          <h1>Radio</h1>
-        </ContentPage>
-        <ContentPage>
-          <h1>Computer</h1>
-        </ContentPage>
-        <ContentPage>
-          <h1>TV</h1>
-        </ContentPage>
+      <TabBar
+        tabs={tabs}
+        activeTabIndex={activeTabIndex}
+        setActiveTabIndex={setActiveTabIndex}
+      />
+      <Content ref={contentContainer} {...bind()}>
+        {tabs.map(tab => (
+          <ContentPage key={tab.id}>{tab.content}</ContentPage>
+        ))}
       </Content>
     </PagerContainer>
   )
