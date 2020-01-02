@@ -58,20 +58,17 @@ const TabBar: React.FC<Props> = ({
       ],
     }),
   }
+  const tabComponents = tabs.map((tab, i) => (
+    <Tab key={tab.id} onClick={() => setActiveTabIndex(i)}>
+      {tab.icon}
+    </Tab>
+  ))
 
   return (
     <TabRowContainer tabCount={tabCount}>
-      <Row tabCount={tabCount}>
-        {tabs.map((tab, i) => (
-          <Tab key={tab.id} onClick={() => setActiveTabIndex(i)}>
-            {tab.icon}
-          </Tab>
-        ))}
-      </Row>
+      <Row tabCount={tabCount}>{tabComponents}</Row>
       <OverlayRow style={overlayStyle} tabCount={tabCount}>
-        {tabs.map(tab => (
-          <Tab key={tab.id}>{tab.icon}</Tab>
-        ))}
+        {tabComponents}
       </OverlayRow>
     </TabRowContainer>
   )
